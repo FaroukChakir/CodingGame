@@ -20,7 +20,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        env('Trusted_Frontend'),
+        env('Cors'),
     ],
 
     'allowed_origins_patterns' => [],
