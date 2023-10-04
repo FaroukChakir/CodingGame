@@ -5,7 +5,7 @@ This application serve to create a products and categories, also to add product 
 This requires frontend as to review the products and search through the categories for specific products, and data is manipulated using commands.
 
 
-## Features
+## Remarks !
 
 Create a database and update the variables in your .env File:
 
