@@ -13,12 +13,12 @@ class CategoryProductService
         $this->categoryproductRepository = $categoryproductRepository;
     }
 
-    public function createProduct(array $data)
+    public function createCategoryProduct(array $data)
     {
         return $this->categoryproductRepository->create($data);
     }
 
-    public function deleteProduct($categoryproductId)
+    public function deleteCategoryProduct($categoryproductId)
     {
         return $this->categoryproductRepository->delete($categoryproductId);
     }
