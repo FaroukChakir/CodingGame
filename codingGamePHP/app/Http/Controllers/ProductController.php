@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
 use App\Repositories\ProductRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\CategoryProductRepository;
@@ -23,35 +24,47 @@ class ProductController extends Controller
         $this->categoryProductRepository = $categoryProductRepository;
     }
 
-    public function getProducts(Request $request)
+    public function getProducts()
     {
-        $perPage = $request->input('per_page', 10);
+        $request = ServerRequest::fromGlobals();
+
+        $perPage = $request->getQueryParams()['per_page'] ?? 10;
         $products = $this->productRepository->paginate($perPage);
-        return response()->json($products);
+        $productsJson = json_encode($products);
+
+        $response = new Response(200, ['Content-Type' => 'application/json'], $productsJson);
+
+        return $response;
     }
 
-    public function searchProductsByCategory(Request $request)
+    public function searchProductsByCategory($category)
     {
-        $categoryName = $request->input('category');
+
+        $request = new ServerRequest('GET', '/path-to-search?category=' . $category);
+
+        $categoryName = $request->getQueryParams()['category'];
 
         if (!$categoryName) {
-            return $this->getProducts($request);
+            return new Response(400, ['Content-Type' => 'application/json'], json_encode(['message' => 'Missing category parameter']));
         }
 
         $category = $this->categoryRepository->getByName($categoryName);
 
         if (!$category) {
-            return response()->json(['message' => 'No category found', 'data' => []]);
+            return new Response(404, ['Content-Type' => 'application/json'], json_encode(['message' => 'No category found']));
         }
 
         $productIds = $this->categoryProductRepository->getProductIdsByCategory($category->id);
 
         if (empty($productIds)) {
-            return response()->json(['message' => 'No products found for this category', 'data' => []]);
+            return new Response(404, ['Content-Type' => 'application/json'], json_encode(['message' => 'No products found for this category']));
         }
 
         $products = $this->productRepository->getProductsByIds($productIds);
+        $productsJson = json_encode($products);
+        
+        $response = new Response(200, ['Content-Type' => 'application/json'], $productsJson);
 
-        return response()->json(['data' => $products]);
+        return $response;
     }
 }
