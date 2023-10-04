@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Repositories\CategoryRepository;
 
-class CategorytService
+class CategoryService
 {
     protected $categoryRepository;
 
@@ -21,6 +21,10 @@ class CategorytService
     public function deleteCategory($categoryId)
     {
         return $this->categoryRepository->delete($categoryId);
+    }
+    public function getCategoryById($categoryId)
+    {
+        return $this->categoryRepository->getById($categoryId);
     }
 
 }

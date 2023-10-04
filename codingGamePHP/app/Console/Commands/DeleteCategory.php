@@ -3,19 +3,27 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\Category;
-use App\Repositories\CategoryRepository;
+use App\Services\CategoryService;
 
 class DeleteCategory extends Command
 {
     protected $signature = 'category:delete {category_id}';
     protected $description = 'Delete a category';
 
-    public function handle(CategoryRepository $categoryRepository)
+    protected $categoryService; 
+
+    public function __construct(CategoryService $categoryService) 
+    {
+        parent::__construct();
+        $this->categoryService = $categoryService;
+    }
+
+    public function handle()
     {
         $categoryId = $this->argument('category_id');
-        $result = $categoryRepository->delete($categoryId);
-    
+
+        $result = $this->categoryService->deleteCategory($categoryId);
+
         if ($result) {
             $this->info("Category with ID $categoryId deleted successfully.");
         } else {
